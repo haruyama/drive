@@ -93,7 +93,7 @@ func (r *Remote) FindByPath(p string) (file *types.File, err error) {
 func (r *Remote) FindByParentId(parentId string) (files []*types.File, err error) {
 	req := r.service.Files.List()
 	// TODO: use field selectors
-	req.Q(fmt.Sprintf("'%s' in parents and trashed=false", parentId))
+	req.Q(fmt.Sprintf("'%s' in parents and trashed=false", escapeQueryString(parentId)))
 	results, err := req.Do()
 	// TODO: handle paging
 	if err != nil {
@@ -163,7 +163,7 @@ func (r *Remote) findByPathRecv(parentId string, p []string) (file *types.File, 
 	// find the file or directory under parentId and titled with p[0]
 	req := r.service.Files.List()
 	// TODO: use field selectors
-	req.Q(fmt.Sprintf("'%s' in parents and title = '%s' and trashed=false", parentId, p[0]))
+	req.Q(fmt.Sprintf("'%s' in parents and title = '%s' and trashed=false", escapeQueryString(parentId), escapeQueryString(p[0])))
 	files, err := req.Do()
 	if err != nil || len(files.Items) < 1 {
 		// TODO: make sure only 404s are handled here
@@ -198,3 +198,10 @@ func newTransport(context *config.Context) *oauth.Transport {
 		},
 	}
 }
+
+func escapeQueryString(query string) (result string) {
+	return strings.Replace(
+		strings.Replace(query, "\\", "\\\\", -1),
+		"'", "\\'", -1)
+}
+
