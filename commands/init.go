@@ -15,7 +15,7 @@
 package commands
 
 import (
-	"github.com/rakyll/drive/remote"
+	"github.com/haruyama/drive/remote"
 )
 
 func (g *Commands) Init() (err error) {

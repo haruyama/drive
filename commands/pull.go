@@ -21,7 +21,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/rakyll/drive/types"
+	"github.com/haruyama/drive/types"
 )
 
 const (

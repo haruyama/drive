@@ -19,8 +19,8 @@ import (
 	"path"
 
 	"github.com/cheggaaa/pb"
-	"github.com/rakyll/drive/config"
-	"github.com/rakyll/drive/remote"
+	"github.com/haruyama/drive/config"
+	"github.com/haruyama/drive/remote"
 )
 
 var (

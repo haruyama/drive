@@ -22,8 +22,8 @@ import (
 	"path/filepath"
 
 	"github.com/rakyll/command"
-	"github.com/rakyll/drive/commands"
-	"github.com/rakyll/drive/config"
+	"github.com/haruyama/drive/commands"
+	"github.com/haruyama/drive/config"
 )
 
 var context *config.Context
@@ -31,7 +31,7 @@ var context *config.Context
 const (
 	descInit    = "inits a directory and authenticates user"
 	descPull    = "pulls remote changes from google drive"
-	descPush    = "push local changes to google drive"
+	descPush    = "pushes local changes to google drive"
 	descDiff    = "compares a local file with remote"
 	descPublish = "publishes a file and prints its publicly available url"
 )

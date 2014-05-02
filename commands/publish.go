@@ -17,7 +17,7 @@ package commands
 import (
 	"fmt"
 
-	"github.com/rakyll/drive/types"
+	"github.com/haruyama/drive/types"
 )
 
 func (c *Commands) Publish() (err error) {

@@ -24,8 +24,8 @@ import (
 
 	"code.google.com/p/goauth2/oauth"
 	drive "code.google.com/p/google-api-go-client/drive/v2"
-	"github.com/rakyll/drive/config"
-	"github.com/rakyll/drive/types"
+	"github.com/haruyama/drive/config"
+	"github.com/haruyama/drive/types"
 )
 
 const (

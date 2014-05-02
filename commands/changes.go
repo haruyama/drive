@@ -20,7 +20,7 @@ import (
 	"sync"
 	"strings"
 
-	"github.com/rakyll/drive/types"
+	"github.com/haruyama/drive/types"
 )
 
 type dirList struct {
