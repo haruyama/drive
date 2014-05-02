@@ -98,7 +98,7 @@ func (c *Change) Op() int {
 	if !c.Src.IsDir {
 		// if it's a regular file, see it it's modified
 		// TODO: handle the case optionally looking at the md5 checksum
-		if c.Src.Size != c.Dest.Size || !c.Src.ModTime.Equal(c.Dest.ModTime) {
+		if c.Src.Size != c.Dest.Size {
 			return OpMod
 		}
 	}

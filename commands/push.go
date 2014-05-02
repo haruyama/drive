@@ -21,9 +21,9 @@ import (
 	gopath "path"
 	"strings"
 
-	"github.com/rakyll/drive/config"
-	"github.com/rakyll/drive/remote"
-	"github.com/rakyll/drive/types"
+	"github.com/haruyama/drive/config"
+	"github.com/haruyama/drive/remote"
+	"github.com/haruyama/drive/types"
 )
 
 // Pushes to remote if local path exists and in a god context. If path is a
@@ -73,7 +73,7 @@ func (g *Commands) playPushChangeList(cl []*types.Change) (err error) {
 func (g *Commands) remoteMod(change *types.Change) (err error) {
 	defer g.taskDone()
 	absPath := g.context.AbsPathOf(change.Path)
-	var updated, parent *types.File
+	var parent *types.File
 	if change.Dest != nil {
 		change.Src.Id = change.Dest.Id // TODO: bad hack
 	}
@@ -90,10 +90,10 @@ func (g *Commands) remoteMod(change *types.Change) (err error) {
 		body, _ = os.Open(absPath)
 		defer body.Close()
 	}
-	if updated, err = g.rem.Upsert(parent.Id, change.Src, body); err != nil {
+	if _, err = g.rem.Upsert(parent.Id, change.Src, body); err != nil {
 		return
 	}
-	return os.Chtimes(absPath, updated.ModTime, updated.ModTime)
+	return
 }
 
 func (g *Commands) remoteAdd(change *types.Change) (err error) {
