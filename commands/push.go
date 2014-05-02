@@ -88,6 +88,7 @@ func (g *Commands) remoteMod(change *types.Change) (err error) {
 	if !change.Src.IsDir {
 		// TODO: handle errors, read more efficiently for large files
 		body, _ = os.Open(absPath)
+		defer body.Close()
 	}
 	if updated, err = g.rem.Upsert(parent.Id, change.Src, body); err != nil {
 		return
