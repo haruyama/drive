@@ -93,6 +93,7 @@ func (r *Remote) FindByPath(p string) (file *types.File, err error) {
 func (r *Remote) FindByParentId(parentId string) (files []*types.File, err error) {
 	req := r.service.Files.List()
 	// TODO: use field selectors
+	req.MaxResults(1000)
 	req.Q(fmt.Sprintf("'%s' in parents and trashed=false", escapeQueryString(parentId)))
 	results, err := req.Do()
 	// TODO: handle paging
@@ -162,6 +163,7 @@ func (r *Remote) Upsert(parentId string, file *types.File, body io.Reader) (f *t
 func (r *Remote) findByPathRecv(parentId string, p []string) (file *types.File, err error) {
 	// find the file or directory under parentId and titled with p[0]
 	req := r.service.Files.List()
+	req.MaxResults(1000)
 	// TODO: use field selectors
 	req.Q(fmt.Sprintf("'%s' in parents and title = '%s' and trashed=false", escapeQueryString(parentId), escapeQueryString(p[0])))
 	files, err := req.Do()
