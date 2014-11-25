@@ -6,13 +6,14 @@
 
 ## Installation
 
-    go get github.com/rakyll/drive
+    go get github.com/rakyll/drive/cmd/drive
 
 Use `drive help` for further reference.
 
-	$ drive init [path] 
+	$ drive init [path]
 	$ drive pull [-r -no-prompt path] # pulls from remote
 	$ drive push [-r -no-prompt path] # pushes to the remote
+	$ drive push [-r -hidden path] # pushes also hidden directories and paths to the remote
 	$ drive diff [path] # outputs a diff of local and remote
 	$ drive publish [path] # publishes a file, outputs URL
 
@@ -27,7 +28,7 @@ Background sync is not just hard, it's stupid. My technical and philosophical ra
 
 `drive` is not a sync deamon, it provides:
 
-* Upstreaming and downstreaming. Unlike a sync command, we provide pull and push actions. User has opportunity to decide what to do with their local copy and when. Do some changes, either push it to remote or revert it to the remote version. Perform these actions with user prompt. 
+* Upstreaming and downstreaming. Unlike a sync command, we provide pull and push actions. User has opportunity to decide what to do with their local copy and when. Do some changes, either push it to remote or revert it to the remote version. Perform these actions with user prompt.
 
 	    $ echo "hello" > hello.txt
 	    $ drive push # pushes hello.txt to Google Drive
@@ -47,7 +48,6 @@ Background sync is not just hard, it's stupid. My technical and philosophical ra
 ## Known issues
 * Probably, it doesn't work on Windows.
 * Google Drive allows a directory to contain files/directories with the same name. Client doesn't handle these cases yet. We don't recommend you to use `drive` if you have such files/directories to avoid data loss.
-* Weak file comparison, we only encounter lastMod and file size to determine if a file has modified. Md5 digest should be a part of the comparison.
 * Racing conditions occur if remote is being modified while we're trying to update the file. Google Drive provides resource versioning with ETags, use Etags to avoid racy cases.
 
 ## License

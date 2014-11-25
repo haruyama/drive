@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package commands
+package drive
 
 import (
 	"fmt"
@@ -22,8 +22,6 @@ import (
 	"strings"
 
 	"github.com/haruyama/drive/config"
-	"github.com/haruyama/drive/remote"
-	"github.com/haruyama/drive/types"
 )
 
 // Pushes to remote if local path exists and in a god context. If path is a
@@ -32,18 +30,18 @@ import (
 func (g *Commands) Push() (err error) {
 	absPath := g.context.AbsPathOf(g.opts.Path)
 	r, err := g.rem.FindByPath(g.opts.Path)
-	if err != nil && err != remote.ErrPathNotExists {
+	if err != nil && err != ErrPathNotExists {
 		return err
 	}
 
-	var l *types.File
+	var l *File
 	localinfo, _ := os.Stat(absPath)
 	if localinfo != nil {
-		l = types.NewLocalFile(absPath, localinfo)
+		l = NewLocalFile(absPath, localinfo)
 	}
 
 	fmt.Println("Resolving...")
-	var cl []*types.Change
+	var cl []*Change
 	if cl, err = g.resolveChangeListRecv(true, g.opts.Path, r, l); err != nil {
 		return err
 	}
@@ -54,15 +52,15 @@ func (g *Commands) Push() (err error) {
 	return
 }
 
-func (g *Commands) playPushChangeList(cl []*types.Change) (err error) {
+func (g *Commands) playPushChangeList(cl []*Change) (err error) {
 	g.taskStart(len(cl))
 	for _, c := range cl {
 		switch c.Op() {
-		case types.OpMod:
+		case OpMod:
 			g.remoteMod(c)
-		case types.OpAdd:
+		case OpAdd:
 			g.remoteAdd(c)
-		case types.OpDelete:
+		case OpDelete:
 			g.remoteDelete(c)
 		}
 	}
@@ -70,10 +68,10 @@ func (g *Commands) playPushChangeList(cl []*types.Change) (err error) {
 	return err
 }
 
-func (g *Commands) remoteMod(change *types.Change) (err error) {
+func (g *Commands) remoteMod(change *Change) (err error) {
 	defer g.taskDone()
 	absPath := g.context.AbsPathOf(change.Path)
-	var parent *types.File
+	var parent *File
 	if change.Dest != nil {
 		change.Src.Id = change.Dest.Id // TODO: bad hack
 	}
@@ -86,8 +84,10 @@ func (g *Commands) remoteMod(change *types.Change) (err error) {
 
 	var body *os.File
 	if !change.Src.IsDir {
-		// TODO: handle errors, read more efficiently for large files
 		body, _ = os.Open(absPath)
+		if err != nil {
+			return err
+		}
 		defer body.Close()
 	}
 	if _, err = g.rem.Upsert(parent.Id, change.Src, body); err != nil {
@@ -96,25 +96,24 @@ func (g *Commands) remoteMod(change *types.Change) (err error) {
 	return
 }
 
-func (g *Commands) remoteAdd(change *types.Change) (err error) {
+func (g *Commands) remoteAdd(change *Change) (err error) {
 	return g.remoteMod(change)
 }
 
-func (g *Commands) remoteDelete(change *types.Change) (err error) {
+func (g *Commands) remoteDelete(change *Change) (err error) {
 	defer g.taskDone()
 	return g.rem.Trash(change.Dest.Id)
 }
 
-func list(context *config.Context, path string) (files []*types.File, err error) {
+func list(context *config.Context, path string, hidden bool) (files []*File, err error) {
 	absPath := context.AbsPathOf(path)
 	var f []os.FileInfo
 	if f, err = ioutil.ReadDir(absPath); err != nil {
 		return
 	}
 	for _, file := range f {
-		// ignore hidden files
-		if !strings.HasPrefix(file.Name(), ".") {
-			files = append(files, types.NewLocalFile(gopath.Join(absPath, file.Name()), file))
+		if hidden || !strings.HasPrefix(file.Name(), ".") {
+			files = append(files, NewLocalFile(gopath.Join(absPath, file.Name()), file))
 		}
 	}
 	return

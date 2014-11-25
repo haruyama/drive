@@ -21,9 +21,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/rakyll/command"
-	"github.com/haruyama/drive/commands"
+	"github.com/haruyama/drive"
 	"github.com/haruyama/drive/config"
+	"github.com/rakyll/command"
 )
 
 var context *config.Context
@@ -52,7 +52,7 @@ func (cmd *initCmd) Flags(fs *flag.FlagSet) *flag.FlagSet {
 }
 
 func (cmd *initCmd) Run(args []string) {
-	exitWithError(commands.New(initContext(args), nil).Init())
+	exitWithError(drive.New(initContext(args), nil).Init())
 }
 
 type pullCmd struct {
@@ -68,7 +68,7 @@ func (cmd *pullCmd) Flags(fs *flag.FlagSet) *flag.FlagSet {
 
 func (cmd *pullCmd) Run(args []string) {
 	context, path := discoverContext(args)
-	exitWithError(commands.New(context, &commands.Options{
+	exitWithError(drive.New(context, &drive.Options{
 		Path:        path,
 		IsRecursive: *cmd.isRecursive,
 		IsNoPrompt:  *cmd.isNoPrompt,
@@ -76,22 +76,25 @@ func (cmd *pullCmd) Run(args []string) {
 }
 
 type pushCmd struct {
-	isRecursive *bool
+	hidden      *bool
 	isNoPrompt  *bool
+	isRecursive *bool
 }
 
 func (cmd *pushCmd) Flags(fs *flag.FlagSet) *flag.FlagSet {
 	cmd.isRecursive = fs.Bool("r", true, "performs the push action recursively")
 	cmd.isNoPrompt = fs.Bool("no-prompt", false, "shows no prompt before applying the push action")
+	cmd.hidden = fs.Bool("hidden", false, "allows syncing of hidden paths")
 	return fs
 }
 
 func (cmd *pushCmd) Run(args []string) {
 	context, path := discoverContext(args)
-	exitWithError(commands.New(context, &commands.Options{
+	exitWithError(drive.New(context, &drive.Options{
 		Path:        path,
-		IsRecursive: *cmd.isRecursive,
+		Hidden:      *cmd.hidden,
 		IsNoPrompt:  *cmd.isNoPrompt,
+		IsRecursive: *cmd.isRecursive,
 	}).Push())
 }
 
@@ -103,7 +106,7 @@ func (cmd *diffCmd) Flags(fs *flag.FlagSet) *flag.FlagSet {
 
 func (cmd *diffCmd) Run(args []string) {
 	context, path := discoverContext(args)
-	exitWithError(commands.New(context, &commands.Options{
+	exitWithError(drive.New(context, &drive.Options{
 		Path: path,
 	}).Diff())
 }
@@ -116,7 +119,7 @@ func (cmd *publishCmd) Flags(fs *flag.FlagSet) *flag.FlagSet {
 
 func (cmd *publishCmd) Run(args []string) {
 	context, path := discoverContext(args)
-	exitWithError(commands.New(context, &commands.Options{
+	exitWithError(drive.New(context, &drive.Options{
 		Path: path,
 	}).Publish())
 }

@@ -12,23 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package commands
+package drive
 
-import (
-	"fmt"
-
-	"github.com/haruyama/drive/types"
-)
-
-func (c *Commands) Publish() (err error) {
-	var file *types.File
-	var link string
-	if file, err = c.rem.FindByPath(c.opts.Path); err != nil {
+func (g *Commands) Init() (err error) {
+	var refresh string
+	// TODO: read from env variable.
+	g.context.ClientId = "354790962074-7rrlnuanmamgg1i4feed12dpuq871bvd.apps.googleusercontent.com"
+	g.context.ClientSecret = "RHjKdah8RrHFwu6fcc0uEVCw"
+	if refresh, err = RetrieveRefreshToken(g.context); err != nil {
 		return
 	}
-	if link, err = c.rem.Publish(file.Id); err != nil {
-		return
-	}
-	fmt.Println("Published on", link)
+	g.context.RefreshToken = refresh
+	err = g.context.Write()
 	return
 }
